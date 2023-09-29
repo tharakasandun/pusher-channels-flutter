@@ -1,6 +1,7 @@
 package com.pusher.channels_flutter
 
 import android.content.Context
+import androidx.annotation.NonNull
 
 import com.google.gson.Gson
 import com.pusher.client.ChannelAuthorizer
