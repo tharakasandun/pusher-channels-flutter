@@ -1,5 +1,7 @@
 package com.pusher.channels_flutter
 
+import android.content.Context
+
 import com.google.gson.Gson
 import com.pusher.client.ChannelAuthorizer
 import com.pusher.client.Pusher
@@ -26,12 +28,13 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     ConnectionEventListener, ChannelEventListener, SubscriptionEventListener,
     PrivateChannelEventListener, PrivateEncryptedChannelEventListener, PresenceChannelEventListener,
     ChannelAuthorizer {
-    private var activity: Activity? = null
+    private var applicationContext: Context? = null
     private lateinit var methodChannel: MethodChannel
     private var pusher: Pusher? = null
     private val TAG = "PusherChannelsFlutter"
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        applicationContext = flutterPluginBinding.applicationContext
         methodChannel =
             MethodChannel(
                 flutterPluginBinding.binaryMessenger,
@@ -40,23 +43,8 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
         methodChannel.setMethodCallHandler(this)
     }
 
-    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        activity = binding.activity
-    }
-
-    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        activity = binding.activity
-    }
-
-    override fun onDetachedFromActivityForConfigChanges() {
-        activity = null
-    }
-
-    override fun onDetachedFromActivity() {
-        activity = null
-    }
-
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        applicationContext = null
         methodChannel.setMethodCallHandler(null)
     }
 
@@ -87,7 +75,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
     }
 
     private fun callback(method: String, args: Any) {
-        activity?.runOnUiThread {
+        applicationContext?.runOnUiThread {
             methodChannel.invokeMethod(method, args)
         }
     }
@@ -178,7 +166,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAw
         var result: String? = null
         val mutex = Semaphore(0)
         try {
-            activity!!.runOnUiThread {
+            applicationContext!!.runOnUiThread {
                 methodChannel.invokeMethod("onAuthorizer", mapOf(
                     "channelName" to channelName,
                     "socketId" to socketId
