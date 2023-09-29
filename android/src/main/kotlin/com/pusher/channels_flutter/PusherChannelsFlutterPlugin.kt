@@ -32,6 +32,10 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler,
     private var pusher: Pusher? = null
     private val TAG = "PusherChannelsFlutter"
 
+    private val pusherChannelsService: PusherChannelsService by lazy {
+        PusherChannelsService()
+    }
+
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         applicationContext = flutterPluginBinding.applicationContext
         methodChannel =
@@ -74,7 +78,11 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler,
     }
 
     private fun callback(method: String, args: Any) {
+        val activity = pusherChannelsService.getActivity()
+
+        activity?.runOnUiThread {
             methodChannel.invokeMethod(method, args)
+        }
     }
 
     private fun init(
@@ -163,6 +171,8 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler,
         var result: String? = null
         val mutex = Semaphore(0)
         try {
+            val activity = pusherChannelsService.getActivity()
+            activity!!.runOnUiThread {
                 methodChannel.invokeMethod("onAuthorizer", mapOf(
                     "channelName" to channelName,
                     "socketId" to socketId
@@ -186,7 +196,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler,
                         mutex.release()
                     }
                 })
-
+            }
         } catch (exception: Exception) {
             Log.i(TAG, "Pusher authorize error: " + exception.toString())
             result = "{ }"
