@@ -14,8 +14,6 @@ import com.pusher.client.util.HttpChannelAuthorizer
 import io.flutter.Log
 import android.app.Activity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.embedding.engine.plugins.activity.ActivityAware
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -24,7 +22,7 @@ import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.concurrent.Semaphore
 
-class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
+class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler,
     ConnectionEventListener, ChannelEventListener, SubscriptionEventListener,
     PrivateChannelEventListener, PrivateEncryptedChannelEventListener, PresenceChannelEventListener,
     ChannelAuthorizer {
