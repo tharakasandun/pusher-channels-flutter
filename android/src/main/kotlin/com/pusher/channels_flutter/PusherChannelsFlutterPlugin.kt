@@ -31,7 +31,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler,
     private var pusher: Pusher? = null
     private val TAG = "PusherChannelsFlutter"
 
-    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         applicationContext = flutterPluginBinding.applicationContext
         methodChannel =
             MethodChannel(
@@ -73,7 +73,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler,
     }
 
     private fun callback(method: String, args: Any) {
-        applicationContext?.runOnUiThread {
+        (applicationContext as Activity)?.runOnUiThread {
             methodChannel.invokeMethod(method, args)
         }
     }
@@ -164,7 +164,7 @@ class PusherChannelsFlutterPlugin : FlutterPlugin, MethodCallHandler,
         var result: String? = null
         val mutex = Semaphore(0)
         try {
-            applicationContext!!.runOnUiThread {
+            (applicationContext as Activity)!!.runOnUiThread {
                 methodChannel.invokeMethod("onAuthorizer", mapOf(
                     "channelName" to channelName,
                     "socketId" to socketId
